@@ -1,5 +1,7 @@
 package assert
 
+import "reflect"
+
 func (w Wrapper) IsEqualTo(expected interface{}) {
 	if !w.equals(expected) {
 		w.t.Errorf("Expected %#v to equal %#v", w.compared, expected)
@@ -13,5 +15,5 @@ func (w Wrapper) IsNotEqualTo(unexpected interface{}) {
 }
 
 func (w Wrapper) equals(expected interface{}) bool {
-	return w.compared == expected
+	return reflect.DeepEqual(w.compared, expected)
 }
