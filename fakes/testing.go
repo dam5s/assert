@@ -10,6 +10,7 @@ import (
 type FakeTest struct {
 	t      *testing.T
 	failed bool
+	fatal bool
 }
 
 func NewFakeTest(t *testing.T) (fakeT *FakeTest) {
@@ -22,9 +23,21 @@ func (test *FakeTest) Errorf(format string, args ...interface{}) {
 	test.failed = true
 }
 
+func (test *FakeTest) Fatalf(format string, args ...interface{}) {
+	test.failed = true
+	test.fatal = true
+}
+
 func (test *FakeTest) ShouldHaveFailed() {
 	if !test.failed {
 		test.t.Errorf("Expected test to have failed: %s", test.caller())
+	}
+	test.reset()
+}
+
+func (test *FakeTest) ShouldHaveFatallyFailed() {
+	if !test.failed || !test.fatal {
+		test.t.Errorf("Expected test to have fatally failed: %s", test.caller())
 	}
 	test.reset()
 }
@@ -38,6 +51,7 @@ func (test *FakeTest) ShouldHavePassed() {
 
 func (test *FakeTest) reset() {
 	test.failed = false
+	test.fatal = false
 }
 
 func (test *FakeTest) caller() string {
